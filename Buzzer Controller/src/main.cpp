@@ -4,6 +4,14 @@
 #include <HTTPClient.h>
 #include <U8x8lib.h> // OLED display
 #include <Wire.h>    // required by U8x8lib
+#include <Adafruit_TinyUSB.h>
+#include <MIDI.h>
+
+// USB MIDI object
+Adafruit_USBD_MIDI usb_midi;
+// Create a new instance of the Arduino MIDI Library,
+// and attach usb_midi as the transport.
+MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // pin setup
 #define PIN_SW D8
@@ -114,6 +122,9 @@ void runServer()
 // setup method
 void setup()
 {
+  MIDI.begin(MIDI_CHANNEL_OMNI);
+  Serial.begin(115200);
+
   // OLED setup
   u8x8.begin();
   u8x8.setFont(u8x8_font_chroma48medium8_r);
@@ -135,5 +146,12 @@ void setup()
 // loop method
 void loop()
 {
-  runServer();
+  MIDI.sendNoteOn(69, 127, 1);
+  Serial.println("Note on");
+  delay(1000);      
+  MIDI.sendNoteOff(69, 127, 1); 
+  Serial.println("Note off");
+  delay(1000);
+
+  //runServer();
 }
